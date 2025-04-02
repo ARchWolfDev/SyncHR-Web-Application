@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Avatar from "react-avatar-edit"
+// import Avatar from "react-avatar-edit"
 
 function AvatarEditor() {
 
@@ -22,14 +22,14 @@ function AvatarEditor() {
 
   return (
     <div>
-      <Avatar 
+      {/* <Avatar 
         width={300}
         height={300}
         onCrop={onCrop}
         onClose={onClose}
         onBeforeFileLoad={onBeforeFileLoad}
         src={null}
-      />
+      /> */}
       {preview && <img src={preview} alt='Preview' />}
     </div>
   );

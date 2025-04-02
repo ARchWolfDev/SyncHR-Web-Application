@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Col, Row, Button } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // import the snow theme CSS
-import 'react-quill/dist/quill.bubble.css'; // for bubble theme (optional)
-import Quill from 'quill';
-import TableUI from 'quill-table-ui';
+// import ReactQuill from 'react-quill';
+// import 'react-quill/dist/quill.snow.css'; // import the snow theme CSS
+// import 'react-quill/dist/quill.bubble.css'; // for bubble theme (optional)
+// import Quill from 'quill';
+// import TableUI from 'quill-table-ui';
 // import 'quill-table-ui/dist/quill-table-ui.css';
-Quill.register({
-    'modules/tableUI': TableUI,
-});
+// Quill.register({
+//     'modules/tableUI': TableUI,
+// });
 
 const initialDocsTree = [
     {
@@ -230,32 +230,7 @@ function InternalDocumentation() {
                         </Row>
                         <Row>
                             {editingContent ? (
-                                <ReactQuill
-                                    value={selectedDoc.content}
-                                    onChange={(content) => setSelectedDoc({ ...selectedDoc, content })}
-                                    modules={{
-                                        toolbar: {
-                                            container: [
-                                                [{ 'header': '1'}, { 'header': '2'}, { 'font': [] }],
-                                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                                                [{ 'align': [] }],
-                                                ['bold', 'italic', 'underline'],
-                                                ['link', 'image', 'blockquote'],
-                                                [{ 'color': [] }, { 'background': [] }],
-                                                ['code-block'],
-                                                ['insertTable'], // Add custom insertTable button
-                                                ['tableCellHeader'], // Optional for table headers
-                                            ],
-                                        },
-                                        tableUI: true,
-                                    }}
-                                    formats={[
-                                        'header', 'font', 'list', 'align', 'bold', 'italic', 'underline', 
-                                        'link', 'image', 'blockquote', 'color', 'background', 'code-block', 
-                                        'table', 'cell', 'header'
-                                    ]}
-                                    theme="snow"
-                                />
+                                <></>
                             ) : (
                                 <p>
                                     {selectedDoc.content}{" "}

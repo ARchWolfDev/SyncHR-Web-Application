@@ -22,8 +22,8 @@ def get_next_id(alias: str):
 
 def get_table(alias: str):
     CURSOR.execute(f"SELECT get_table('{alias}')")
-    result = CURSOR.fetchall()[0][0]
-    return result
+    result = CURSOR.fetchone()
+    return result[0]
 
 
 def get_next_link_id():
@@ -34,9 +34,9 @@ def get_next_link_id():
 
 class Select:
 
-    def __init__(self, alias: str, column: str = '*'):
+    def __init__(self, table: str, column: str = '*'):
         """Table can be also a function if is needed"""
-        self.table = get_table(alias)
+        self.table = table
         self.column = column
         self.description = []
         self.result = []

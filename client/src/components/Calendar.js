@@ -10,13 +10,16 @@ function Calendar() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [timesheets, setTimesheets] = useState([])
     const {handleShowModal} = useModalContext()
+    console.log("FrontEnd")
+    console.log(timesheets)
 
     useEffect(() => {
         const fetchTimesheets = async () => {
             const year = currentDate.getFullYear()
             const month = currentDate.getMonth() + 1
+            // TODO: make request via ?year=${year}&month=${month}
             try {
-                fetch(`http://127.0.0.1:5000/api/timesheet?year=${year}&month=${month}`, {
+                fetch(`http://127.0.0.1:5000/api/timesheet`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -24,7 +27,7 @@ function Calendar() {
                     }
                 })
                 .then(response => response.json())
-                .then(data => setTimesheets(data.data))
+                .then(data => setTimesheets(data))
             } catch (error) {
                 console.log(error)
             }

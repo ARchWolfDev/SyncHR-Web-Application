@@ -49,7 +49,7 @@ def login():
     email = request.json.get("emailAddress")
     password = request.json.get("password")
     try:
-        db_user = db.Select('users').where(email=email).dict_result()[0]
+        db_user = db.Select('t_users').where(email=str.lower(email)).dict_result()[0]
         if check_password_hash(db_user['password'], password):
             token = jwt.encode({
                 'id': db_user['id'],
@@ -81,7 +81,8 @@ def application_interface_config(token):
     decoded_token = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
     user_id = decoded_token['id']
     if request.method == 'GET':
-        user_config = db.Select('userAppConfig').where(user_id=user_id).dict_result()
+        user_config = db.Select('ct_user_app_config').where(user_id=user_id).dict_result()
+        print(user_config)
         return jsonify({
             "message": "Preferences loaded successfully",
             "data": user_config[0]
@@ -93,8 +94,7 @@ def application_interface_config(token):
 def timesheet_api(token):
     if request.method == 'GET':
         if not request.args:
-
-            return jsonify(db.Select('reqTimesheets').all().dict_result())
+            return jsonify(db.Select('v_req_timesheets').all().dict_result())
         else:
             args = request.args.to_dict()
             print(args)
@@ -103,27 +103,27 @@ def timesheet_api(token):
                 result = {}
                 # TODO To modify the 'reqTimesheets' in the database to 'timesheets' or right said 'timesheet' only.
                 #  Need to find a way to make a difference between table and view
-                for distinct_key in db.Select('reqTimesheets', column=f'distinct({args["sortBy"]})').all().result:
+                for distinct_key in db.Select('v_req_timesheets', column=f'distinct({args["sortBy"]})').all().result:
                     if type(distinct_key[0]) == datetime.date:
                         distinct_key = [str(distinct_key[0])]
                     condition = {args['sortBy']: distinct_key[0]}
                     # TODO Make possible multiple conditional from a dictionary.EX: SortBy=id&name
-                    sorted_result = db.Select('reqTimesheets').where(data=condition).dict_result()
+                    sorted_result = db.Select('v_req_timesheets').where(data=condition).dict_result()
                     result[distinct_key[0]] = sorted_result
                 return jsonify(result)
             else:
-                return jsonify(db.Select('reqTimesheets').where(data=args).dict_result())
+                return jsonify(db.Select('v_req_timesheets').where(data=args).dict_result())
 
     elif request.method == 'POST':
         data = request.json
-        data['id'] = db.get_next_id('timesheets')
+        data['id'] = db.get_next_id('t_req_timesheets')
         data['tasks_count'] = len(data['tasks'])
         timesheet_tasks = data['tasks']
         del data['tasks']
-        db.Insert('timesheets', data).insert()
+        db.Insert('t_req_timesheets', data).insert()
         for task in timesheet_tasks:
             task['timesheet_id'] = data['id']
-            db.Insert('timesheetTasks', task).insert()
+            db.Insert('t_req_timesheet_tasks', task).insert()
         return jsonify({'message': 'Request submitted successfully'})
 
 
