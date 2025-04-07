@@ -116,7 +116,7 @@ def timesheet_api(token):
 
     elif request.method == 'POST':
         data = request.json
-        data['id'] = db.get_next_id('t_req_timesheets')
+        data['id'] = db.get_next_id('timesheet')
         data['tasks_count'] = len(data['tasks'])
         timesheet_tasks = data['tasks']
         del data['tasks']
@@ -125,6 +125,12 @@ def timesheet_api(token):
             task['timesheet_id'] = data['id']
             db.Insert('t_req_timesheet_tasks', task).insert()
         return jsonify({'message': 'Request submitted successfully'})
+
+@app.route('/api/timesheetTasks', methods=['GET'])
+@token_required
+def timesheet_tasks(token):
+    if request.method == 'GET':
+        return jsonify(db.Select('t_req_timesheet_tasks').all().dict_result())
 
 
 # DEACTIVATED
@@ -155,12 +161,12 @@ def tasks_api(token):
     if request.method == 'GET':
         if request.args:
             args = request.args.to_dict()
-            return db.Select('tasks').where(data=args).dict_result()
+            return db.Select('t_tasks').where(data=args).dict_result()
         else:
-            return jsonify(db.Select(request.path[5:]).all().dict_result())
+            return jsonify(db.Select('t_tasks').all().dict_result())
 
     elif request.method == 'POST':
-        # TODO Need to be implement the DELETE, UPDATE Options.
+        # TODO Need to be implement the UPDATE Options.
         # TODO Option: To be specified from the json (client side) the action.
         alias = request.path[5:]
         new_task = request.json
@@ -182,14 +188,14 @@ def projects_api(token):
     alias = request.path[5:]
     if request.method == "GET":
         if not request.args:
-            return jsonify(db.Select(alias).all().dict_result())
+            return jsonify(db.Select('t_projects').all().dict_result())
         else:
             args = request.args.to_dict()
-            return jsonify(db.Select(alias).where(data=args).dict_result())
+            return jsonify(db.Select('t_projects').where(data=args).dict_result())
 
     elif request.method == "POST":
         data = request.json
-        data['id'] = db.get_next_id(alias)
+        data['id'] = db.get_next_id('t_projects')
         db.Insert(alias, data=data).insert()
         return jsonify({"message": "Project created successfully!"}), 200
 
@@ -200,9 +206,9 @@ def task_lists_api(token):
     if request.method == 'GET':
         if request.args:
             args = request.args.to_dict()
-            return jsonify(db.Select('taskLists').where(data=args).dict_result())
+            return jsonify(db.Select('t_task_lists').where(data=args).dict_result())
         else:
-            return jsonify(db.Select('taskLists').all().dict_result())
+            return jsonify(db.Select('t_task_lists').all().dict_result())
     elif request.method == 'POST':
         new_task_list = request.json
         new_task_list['id'] = db.get_next_id('taskLists')
@@ -210,6 +216,65 @@ def task_lists_api(token):
         db.Insert('taskLists', data=new_task_list).insert()
         print(new_task_list)
         return jsonify({"message": "Task List created successfully!"})
+
+
+@app.route('/api/custom/projectTaskListTasksRelation', methods=['GET'])
+@token_required
+def project_task_list_task_link_api(token):
+    if request.method == 'GET':
+        if request.args:
+            args = request.args.to_dict()
+            data = db.Select('v_project_task_list_tasks_link').where(data=args).dict_result()
+        else:
+            data = db.Select('v_project_task_list_tasks_link').all().dict_result()
+
+        projects_index = {}  # internal map to track unique projects
+        result = []  # final list
+
+        for row in data:
+            proj_id = row['project_id']
+            task_list_id = row['task_list_id']
+            task_id = row['task_id']
+
+            # -- Project --
+            if proj_id not in projects_index:
+                project = {
+                    'project_id': proj_id,
+                    'client_name': row['client_name'],
+                    'project_name': row['project_name'],
+                    'project_start': str(row['project_start']),
+                    'project_status': row['project_status'],
+                    'task_lists': []
+                }
+                projects_index[proj_id] = project
+                result.append(project)  # append to final list
+
+            project = projects_index[proj_id]
+
+            # -- Task List --
+            task_lists_index = {tl['task_list_id']: tl for tl in project['task_lists']}
+            if task_list_id not in task_lists_index:
+                task_list = {
+                    'task_list_id': task_list_id,
+                    'task_list_name': row['task_list_name'],
+                    'task_list_status': row['task_list_status'],
+                    'task_list_owner': row['task_list_owner'],
+                    'task_list_owner_name': row['task_list_owner_name'],
+                    'task_list_created_date': str(row['task_list_created_date']),
+                    'tasks': []
+                }
+                project['task_lists'].append(task_list)
+            else:
+                task_list = task_lists_index[task_list_id]
+
+            # -- Task --
+            if task_id:
+                task_list['tasks'].append({
+                    'task_id': task_id,
+                    'task_name': row['task_name']
+                })
+
+        return jsonify(result)
 
 
 # DEACTIVATED TEMPORARY Kept for the task list - task relation

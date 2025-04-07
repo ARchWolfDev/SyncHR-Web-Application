@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-// import { Editor } from 'react-draft-wysiwyg';
-// import { EditorState } from 'draft-js';
-// import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-// import createTablePlugin from 'draft-js-table'; // Import the table plugin
+import React, { useState } from 'react'
+import { Button, Col, Row } from 'react-bootstrap'
+import LoadingComponent from './LoadingComponent'
 
-// Create the table plugin
-// const tablePlugin = createTablePlugin();
+function TestComponent() {
 
-const MyEditor = () => {
-  // const [editorState, setEditorState] = useState(EditorState.createEmpty());
+    return (
+        <div>
+            <LoadingComponent />
+            <Button disabled><div class="spinner">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div></Button>
+        </div>
+    )
+}
 
-  return (
-    <></>
-  );
-};
-
-export default MyEditor;
+export default TestComponent

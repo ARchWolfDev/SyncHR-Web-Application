@@ -109,8 +109,8 @@ class Select:
 
 class Insert:
 
-    def __init__(self, alias: str, data: dict):
-        self.table = get_table(alias)
+    def __init__(self, table: str, data: dict):
+        self.table = table
         self.data = data
 
     def insert(self):
