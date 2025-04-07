@@ -1,27 +1,14 @@
 import React from 'react'
-import { useModalContext } from './ModalProvider'
-import AvatarEditor from './AvatarEditor';
-import Avatar from './Avatar';
-import { useUserContext } from './UserProvider';
+import Avatar from './Avatar'
 
 function Header() {
-
-  const {handleShowModal} = useModalContext();
-  const {currentUser} = useUserContext()
-
-  const handleAvatarEdit = () => {
-    handleShowModal('Edit avatar', (prop) => <AvatarEditor {...prop} />)}
-
   return (
-    <div className='heading'>
-      <div className='welcome'>
-        <h1>{currentUser.app_config.header.prompt.h1}</h1>
-        <p>{currentUser.app_config.header.prompt.h5}</p>
+    <div className='header'>
+      <div className='prompt'>
+        <h1>Welcome Andrei!</h1>
+        <p>Role</p>
       </div>
-      <div className='avatar-container'>
-        <Avatar name='Andrei Rachieru' size={100} />
-        <span onClick={handleAvatarEdit} className='edit-icon badge rounded-pill text-bg-danger'><i id="editIcon" className="fa-solid fa-wand-magic-sparkles"></i></span>
-      </div>
+      <Avatar name='Andrei Rachieru' size={100}/>
     </div>
   )
 }
