@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useModalContext } from './ModalProvider'
 import CalendarModalBody from './CalendarModalBody'
 
@@ -6,7 +6,27 @@ function Calendar() {
 
     const {handleOpenModal} = useModalContext()
     const [currentDate, setCurrentDate] = useState( new Date())
-    // const [timesheet, setTimesheet] = useState([])
+    const [timesheet, setTimesheet] = useState([])
+
+    useEffect(() => {
+        const fetchTimesheet = async () => {
+            try {
+                const respone = await fetch('http://127.0.0.1:5000/api/timesheet', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    } 
+                })
+                const data = await respone.json()
+                setTimesheet(data)
+                console.log(data)
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchTimesheet()
+    }, [])
 
     const handlePreviousMonth = () => {
         setCurrentDate(prevDate => {
